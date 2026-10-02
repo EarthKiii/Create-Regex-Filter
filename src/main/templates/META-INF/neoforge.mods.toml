@@ -7,6 +7,9 @@ modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
 authors="EarthKiii"
+# The filter's item texture, shown in the mod list. 16x16 pixel art: no blur when scaled up.
+logoFile="assets/${mod_id}/textures/item/regex_filter.png"
+logoBlur=false
 description='''
 Adds a Regex Filter to Create: matches items (and fluids) by their name, in any language, or by their mod ID.
 Patterns use RE2 syntax and are evaluated in linear time, so no pattern can freeze the server.
