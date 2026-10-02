@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  # Lets release.yml run this exact build before publishing.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Caches Gradle dependencies, Minecraft/NeoForge artifacts and the build cache between runs.
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Build and run unit tests
+        run: ./gradlew build
+
+      - name: Run game tests
+        run: ./gradlew runGameTestServer
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: create_regex_filter
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Upload reports and logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: failure-reports
+          path: |
+            build/reports/
+            run/logs/
+            run/crash-reports/
+          if-no-files-found: ignore
